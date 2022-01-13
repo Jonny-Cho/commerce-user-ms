@@ -31,7 +31,6 @@ public class UserEntity {
         this.email = userDto.getEmail();
         this.name = userDto.getName();
         this.userId = userDto.getUserId();
-        //TODO
-        this.encryptedPwd = "encrypted_password";
+        this.encryptedPwd = userDto.getEncryptedPwd();
     }
 }
