@@ -4,6 +4,7 @@ import com.commerce.dto.UserDto;
 import com.commerce.service.UserService;
 import com.commerce.vo.Greeting;
 import com.commerce.vo.RequestUser;
+import com.commerce.vo.ResponseUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -33,10 +34,11 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity createUser(@RequestBody @Valid final RequestUser requestUser) {
+    public ResponseEntity<ResponseUser> createUser(@RequestBody @Valid final RequestUser requestUser) {
         final UserDto userDto = new UserDto(requestUser);
-        userService.createUser(userDto);
-        return new ResponseEntity(HttpStatus.CREATED);
+        final UserDto user = userService.createUser(userDto);
+        final ResponseUser responseUser = new ResponseUser(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
     }
 
 }

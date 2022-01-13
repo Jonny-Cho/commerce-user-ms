@@ -18,9 +18,9 @@ public class UserService {
         userDto.setUserId(UUID.randomUUID().toString());
 
         final UserEntity userEntity = new UserEntity(userDto);
-        userRepository.save(userEntity);
+        final UserEntity savedUserEntity = userRepository.save(userEntity);
 
-        return null;
+        return new UserDto(savedUserEntity);
     }
 
 }
