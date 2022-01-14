@@ -15,7 +15,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("")
+@RequestMapping
 public class UserController {
 
     private final Environment env;
