@@ -30,4 +30,8 @@ public class UserDto {
         this.userId = entity.getUserId();
         this.createdAt = new Date();
     }
+
+    public static UserDto from(final UserEntity userEntity) {
+        return null;
+    }
 }

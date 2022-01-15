@@ -1,6 +1,7 @@
 package com.commerce.controller;
 
 import com.commerce.dto.UserDto;
+import com.commerce.jpa.UserEntity;
 import com.commerce.service.UserService;
 import com.commerce.vo.Greeting;
 import com.commerce.vo.RequestUser;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,6 +41,20 @@ public class UserController {
         final UserDto user = userService.createUser(userDto);
         final ResponseUser responseUser = new ResponseUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<List<ResponseUser>> getUsers() {
+        final List<UserEntity> userEntityList = userService.getUserByAll();
+        final List<ResponseUser> result = ResponseUser.from(userEntityList);
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+    }
+
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<ResponseUser> getUser(@PathVariable("userId") final String userId) {
+        final UserDto userDto = userService.getUserByUserId(userId);
+        final ResponseUser result = new ResponseUser(userDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
 }
