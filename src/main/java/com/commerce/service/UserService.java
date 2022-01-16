@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -52,5 +53,11 @@ public class UserService implements UserDetailsService {
     @Transactional(readOnly = true)
     public List<UserEntity> getUserByAll() {
         return userRepository.findAll();
+    }
+
+    public UserDto getUserDetailsByEmail(final String username) {
+        final UserEntity entity = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException(username));
+
+        return new UserDto(entity);
     }
 }

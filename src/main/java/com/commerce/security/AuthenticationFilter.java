@@ -1,9 +1,14 @@
 package com.commerce.security;
 
 
+import com.commerce.dto.UserDto;
+import com.commerce.service.UserService;
 import com.commerce.vo.RequestLogin;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -18,7 +23,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 @Slf4j
+@RequiredArgsConstructor
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+
+    private final UserService userService;
+    private final Environment env;
+
     @Override
     public Authentication attemptAuthentication(final HttpServletRequest request, final HttpServletResponse response) throws AuthenticationException {
 
@@ -36,6 +46,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain, final Authentication authResult) throws IOException, ServletException {
         final User user = (User) authResult.getPrincipal();
-        log.debug(user.getUsername());
+        final String username = user.getUsername();
+        UserDto userDetails = userService.getUserDetailsByEmail(username);
     }
 }
