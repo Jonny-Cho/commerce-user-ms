@@ -17,10 +17,11 @@ public class ResponseUser {
 
     private List<ResponseOrder> orders;
 
-    public ResponseUser(final UserDto user) {
-        this.email = user.getEmail();
-        this.name = user.getName();
-        this.userId = user.getUserId();
+    public ResponseUser(final UserDto userDto) {
+        this.email = userDto.getEmail();
+        this.name = userDto.getName();
+        this.userId = userDto.getUserId();
+        this.orders = userDto.getOrders();
     }
 
     public ResponseUser(final UserEntity entity) {

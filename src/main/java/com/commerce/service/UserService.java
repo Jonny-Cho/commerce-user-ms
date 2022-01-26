@@ -3,7 +3,12 @@ package com.commerce.service;
 import com.commerce.dto.UserDto;
 import com.commerce.jpa.UserEntity;
 import com.commerce.jpa.UserRepository;
+import com.commerce.vo.ResponseOrder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,10 +16,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -24,6 +29,8 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final RestTemplate restTemplate;
+    private final Environment env;
 
     @Override
     public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
@@ -45,9 +52,16 @@ public class UserService implements UserDetailsService {
 
     @Transactional(readOnly = true)
     public UserDto getUserByUserId(final String userId) {
-        final UserEntity userEntity = userRepository.findByUserId(userId);
+        final UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        return new UserDto(userEntity);
+        // restTemplate 사용
+        final String orderUrl = String.format(env.getProperty("order_service.url"), userId);
+        final ResponseEntity<List<ResponseOrder>> orderListResponse = restTemplate.exchange(orderUrl, HttpMethod.GET, null,
+                new ParameterizedTypeReference<List<ResponseOrder>>() {
+        });
+        final List<ResponseOrder> orders = orderListResponse.getBody();
+
+        return new UserDto(userEntity, orders);
     }
 
     @Transactional(readOnly = true)
