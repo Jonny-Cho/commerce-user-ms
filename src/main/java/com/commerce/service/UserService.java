@@ -1,5 +1,6 @@
 package com.commerce.service;
 
+import com.commerce.client.OrderServiceClient;
 import com.commerce.dto.UserDto;
 import com.commerce.jpa.UserEntity;
 import com.commerce.jpa.UserRepository;
@@ -29,7 +30,8 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final RestTemplate restTemplate;
+//    private final RestTemplate restTemplate;
+    private final OrderServiceClient orderServiceClient;
     private final Environment env;
 
     @Override
@@ -55,11 +57,14 @@ public class UserService implements UserDetailsService {
         final UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         // restTemplate 사용
-        final String orderUrl = String.format(env.getProperty("order_service.url"), userId);
-        final ResponseEntity<List<ResponseOrder>> orderListResponse = restTemplate.exchange(orderUrl, HttpMethod.GET, null,
-                new ParameterizedTypeReference<List<ResponseOrder>>() {
-        });
-        final List<ResponseOrder> orders = orderListResponse.getBody();
+//        final String orderUrl = String.format(env.getProperty("order_service.url"), userId);
+//        final ResponseEntity<List<ResponseOrder>> orderListResponse = restTemplate.exchange(orderUrl, HttpMethod.GET, null,
+//                new ParameterizedTypeReference<List<ResponseOrder>>() {
+//        });
+//        final List<ResponseOrder> orders = orderListResponse.getBody();
+
+        //feignClient 사용
+        final List<ResponseOrder> orders = orderServiceClient.getOrders(userId);
 
         return new UserDto(userEntity, orders);
     }
